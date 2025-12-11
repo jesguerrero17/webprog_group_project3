@@ -20,10 +20,11 @@ document.body.appendChild(leaderboardDiv);
 
 // Start game
 startBtn.addEventListener("click", () => {
-
-    // TO DO: Make timer to start at 0 and count up
-    // DONE
+    // Start counter
   startCounter();
+
+    // Initialize move Count
+  moveCount = 0;
 
   // Reset scores and player turn
   // TO DO: this should reset the game and have the scorebaord set to 0
@@ -65,24 +66,72 @@ function renderBoard(deck) {
 
   gameBoard.style.gridTemplateColumns = `repeat(${size}, 100px)`;
 
-  deck.forEach((num) => {
+  deck.forEach((num,index) => {
     const tile = document.createElement("div");
     tile.classList.add("tile");
 
-    tile.textContent = num;
-    
+    if (index === deck.length-1){
+      tile.classList.add("empty");
+      tile.textContent = "";
+    }
+
+    else{
+      tile.textContent = num;
+    }
+
+    tile.dataset.index = index;
+    tile.dataset.value = num;
     tile.addEventListener("click", () => moveTile(tile));
     gameBoard.appendChild(tile);
   });
 
 }
 
-// This variable I was thinking of using later for game movement. 
-let tile = document.querySelectorAll(".tile");
+function isAdjacent(i1, i2, size) {
+  const r1 = Math.floor(i1 / size);
+  const c1 = i1 % size;
+  const r2 = Math.floor(i2 / size);
+  const c2 = i2 % size;
+
+  return Math.abs(r1 - r2) + Math.abs(c1 - c2) === 1;
+}
+
 
 // TO DO: Set up the tile move function
 function moveTile(tile){
     console.log("Tile clicked:",tile);
+
+    // Gather tile info and size
+    const tiles = document.querySelectorAll(".tile");
+    const size = parseInt(document.getElementById("tiles").value);
+
+    // Identify clicked tile and empty tile index
+    const clickedIndex = parseInt(tile.dataset.index);
+    const emptyTile = document.querySelector(".tile.empty");
+    const emptyIndex = parseInt(emptyTile.dataset.index);
+
+    // Check for adjacency to prevent illegal moves
+    if (!isAdjacent(clickedIndex, emptyIndex, size)) return;
+
+    // Move Count Incremeant
+    moveCount++;
+    updateScoreBoard();
+
+    // Make Tile Swap visually
+    emptyTile.textContent = tile.textContent;
+    tile.textContent = "";
+
+    // Update empty tile visually
+    emptyTile.classList.remove("empty");
+    tile.classList.add("empty");
+
+    // Swap tile indexes
+    emptyTile.dataset.value = tile.dataset.value;
+    tile.dataset.value = "";
+
+
+  // TO DO: check for win here
+
 }
 
 let timeElapsed = 0;
@@ -91,8 +140,12 @@ let scores = { 1: 0 }; // simple single-player scoreboard
 let currentPlayer = 1;
 
 
+// Move Counter
+
+let moveCount = 0;
+
+
 // Timer
-// TO DO: change timer to counter 
 function startCounter() {
   clearInterval(timer);
   timeElapsed = 0;
@@ -110,15 +163,21 @@ function stopCounter() {
 // End game
 // TO DO: Modify to complete our game
 function endGame(won) {
+  // Stop counter
   stopCounter();
+
 
 // TO DO : Is there a case where game ends and a display should be made?
   alert(won ? "Well Done!" : "Try again!");
 
   // Prompt for name
-  const p1Name = prompt("Enter name for Player 1:");
+  const playerName = prompt("Enter your name:");
 
-  saveScore(p1Name, scores[1]);
+  saveScore({
+    name: playerName,
+    moves: moveCount,
+    time: timeElapsed,
+  });
 
   showLeaderboard();
   gameContainer.style.display = "none";
@@ -127,16 +186,22 @@ function endGame(won) {
 // Scoreboard + Leaderboard
 function updateScoreBoard() {
   scoreBoard.innerHTML = `
-    <h3>Scores</h3>
+    <h3>Stats</h3>
     <p>Player 1: ${scores[1]} points</p>
+    <p>Moves: ${moveCount}</p>
     <p>Current Turn: Player ${currentPlayer}</p>
   `;
 }
 
-function saveScore(name, score) {
+function saveScore(entry) {
   let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
-  leaderboard.push({ name, score });
-  leaderboard.sort((a, b) => b.score - a.score);
+
+  leaderboard.push(entry);
+  leaderboard.sort((a, b) => {
+    if (a.moves !== b.moves) return a.moves - b.moves;
+    return a.time - b.time;
+  });
+
   leaderboard = leaderboard.slice(0, 5); // keep top 5
   localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
 }
@@ -145,6 +210,9 @@ function showLeaderboard() {
   let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
   leaderboardDiv.innerHTML = "<h3>Leaderboard</h3>";
   leaderboard.forEach((entry, index) => {
-    leaderboardDiv.innerHTML += `<p>P${index + 1} - ${entry.name}: ${entry.score}</p>`;
+    leaderboardDiv.innerHTML += `
+     <p>${index + 1}. ${entry.name} — ${entry.moves} moves, ${entry.time}s</p>
+`;
+
   });
 }
