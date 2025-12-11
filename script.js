@@ -22,7 +22,8 @@ document.body.appendChild(leaderboardDiv);
 startBtn.addEventListener("click", () => {
 
     // TO DO: Make timer to start at 0 and count up
-  timeLeftSpan.textContent = timeRemaining;
+    // DONE
+  startCounter();
 
   // Reset scores and player turn
   // TO DO: this should reset the game and have the scorebaord set to 0
@@ -40,6 +41,7 @@ startBtn.addEventListener("click", () => {
 
   // Render board
   renderBoard(deck);
+  
 
   // Show container
   gameContainer.style.display = "block";
@@ -59,23 +61,31 @@ function shuffle(array) {
 function renderBoard(deck) {
   gameBoard.innerHTML = "";
 
-  deck.forEach((img, index) => {
+  const size = parseInt(document.getElementById("tiles").value);
+
+  gameBoard.style.gridTemplateColumns = `repeat(${size}, 100px)`;
+
+  deck.forEach((num) => {
     const tile = document.createElement("div");
     tile.classList.add("tile");
 
+    tile.textContent = num;
+    
     tile.addEventListener("click", () => moveTile(tile));
     gameBoard.appendChild(tile);
   });
 
-  tile = document.querySelectorAll(".tile");
 }
+
+// This variable I was thinking of using later for game movement. 
+let tile = document.querySelectorAll(".tile");
 
 // TO DO: Set up the tile move function
 function moveTile(tile){
     console.log("Tile clicked:",tile);
 }
 
-let timeRemaining = 0;
+let timeElapsed = 0;
 let timer = null;
 let scores = { 1: 0 }; // simple single-player scoreboard
 let currentPlayer = 1;
@@ -85,18 +95,22 @@ let currentPlayer = 1;
 // TO DO: change timer to counter 
 function startCounter() {
   clearInterval(timer);
-  timeRemaining = 0;
+  timeElapsed = 0;
+  timeLeftSpan.textContent = timeElapsed;
   timer = setInterval(() => {
-    timeRemaining++;
-    timeLeftSpan.textContent = timeRemaining;
+    timeElapsed++;
+    timeLeftSpan.textContent = timeElapsed;
   }, 1000);
 }
 
+function stopCounter() {
+  clearInterval(timer);
+}
 
 // End game
 // TO DO: Modify to complete our game
 function endGame(won) {
-  clearInterval(timer);
+  stopCounter();
 
 // TO DO : Is there a case where game ends and a display should be made?
   alert(won ? "Well Done!" : "Try again!");
