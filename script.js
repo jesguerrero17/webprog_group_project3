@@ -18,6 +18,10 @@ const leaderboardDiv = document.createElement("div");
 leaderboardDiv.id = "leaderboard";
 document.body.appendChild(leaderboardDiv);
 
+// Global Deck Variable
+let currentDeck = [];
+
+
 // Start game
 startBtn.addEventListener("click", () => {
     // Start counter
@@ -32,13 +36,11 @@ startBtn.addEventListener("click", () => {
   updateScoreBoard();
 
   // Build deck
-    // TO DO: Here we need to understand how to refference the numbers used in the gameboard, Are they pics?
   const size = parseInt(document.getElementById("tiles").value);
-    const deck = Array.from({ length: size * size }, (_, i) => i + 1);
-
-  
-  // TO DO: Here how do we avoid unsovable shuffles?
-  shuffle(deck);
+  let deck = Array.from({ length: size * size }, (_, i) => i + 1);
+  deck[deck.length - 1] = 0;
+  deck = relayShuffle(deck, size, 200);
+  currentDeck = deck.slice();
 
   // Render board
   renderBoard(deck);
@@ -49,14 +51,52 @@ startBtn.addEventListener("click", () => {
 
 });
 
-// Shuffle helper
-// TO DO: Here how do we avoid unsovable shuffles?
-function shuffle(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
+// Relay shuffle helper
+function relayShuffle(deck, size, moves = 200) {
+  let emptyIndex = deck.indexOf(0);
+
+  for (let i = 0; i < moves; i++) {
+    // Gets valid neighbors
+    const neighbors = getAdjacentIndexes(emptyIndex, size);
+
+    // Pick a random legal move
+    const swapWith = neighbors[Math.floor(Math.random() * neighbors.length)];
+
+    // Swap tiles
+    [deck[emptyIndex], deck[swapWith]] = [deck[swapWith], deck[emptyIndex]];
+
+    // Update empty index
+    emptyIndex = swapWith;
   }
+
+  return deck;
 }
+
+// Adjacency check for gameplay
+function isAdjacent(i1, i2, size) {
+const r1 = Math.floor(i1 / size);
+const c1 = i1 % size;
+const r2 = Math.floor(i2 / size);
+const c2 = i2 % size;
+
+return Math.abs(r1 - r2) + Math.abs(c1 - c2) === 1;
+}
+
+// Adjacency Check for shuffling
+function getAdjacentIndexes(emptyIndex, size) {
+  const row = Math.floor(emptyIndex / size);
+  const col = emptyIndex % size;
+
+  const neighbors = [];
+
+  if (row > 0) neighbors.push(emptyIndex - size);     // up
+  if (row < size - 1) neighbors.push(emptyIndex + size); // down
+  if (col > 0) neighbors.push(emptyIndex - 1);        // left
+  if (col < size - 1) neighbors.push(emptyIndex + 1); // right
+
+  return neighbors;
+}
+
 
 // Render board
 function renderBoard(deck) {
@@ -66,35 +106,27 @@ function renderBoard(deck) {
 
   gameBoard.style.gridTemplateColumns = `repeat(${size}, 100px)`;
 
-  deck.forEach((num,index) => {
+  deck.forEach((num, index) => {
     const tile = document.createElement("div");
     tile.classList.add("tile");
 
-    if (index === deck.length-1){
+    tile.dataset.index = index;
+    tile.dataset.value = num;
+
+    if (num === 0) {
       tile.classList.add("empty");
       tile.textContent = "";
-    }
-
-    else{
+    } else {
       tile.textContent = num;
     }
 
-    tile.dataset.index = index;
-    tile.dataset.value = num;
     tile.addEventListener("click", () => moveTile(tile));
     gameBoard.appendChild(tile);
   });
 
+
 }
 
-function isAdjacent(i1, i2, size) {
-  const r1 = Math.floor(i1 / size);
-  const c1 = i1 % size;
-  const r2 = Math.floor(i2 / size);
-  const c2 = i2 % size;
-
-  return Math.abs(r1 - r2) + Math.abs(c1 - c2) === 1;
-}
 
 
 // TO DO: Set up the tile move function
@@ -102,7 +134,6 @@ function moveTile(tile){
     console.log("Tile clicked:",tile);
 
     // Gather tile info and size
-    const tiles = document.querySelectorAll(".tile");
     const size = parseInt(document.getElementById("tiles").value);
 
     // Identify clicked tile and empty tile index
@@ -117,20 +148,34 @@ function moveTile(tile){
     moveCount++;
     updateScoreBoard();
 
-    // Make Tile Swap visually
-    emptyTile.textContent = tile.textContent;
+    // Swap text
+    const tempText = tile.textContent;
     tile.textContent = "";
+    emptyTile.textContent = tempText;
 
-    // Update empty tile visually
-    emptyTile.classList.remove("empty");
+    // Swap classes
     tile.classList.add("empty");
+    emptyTile.classList.remove("empty");
 
-    // Swap tile indexes
-    emptyTile.dataset.value = tile.dataset.value;
-    tile.dataset.value = "";
+    // Swap dataset.value
+    const tempValue = tile.dataset.value;
+    tile.dataset.value = emptyTile.dataset.value;
+    emptyTile.dataset.value = tempValue;
 
+    // Swap dataset.index
+    tile.dataset.index = emptyIndex;
+    emptyTile.dataset.index = clickedIndex;
 
-  // TO DO: check for win here
+    // Update the underlying deck array
+    const temp = currentDeck[clickedIndex];
+    currentDeck[clickedIndex] = currentDeck[emptyIndex];
+    currentDeck[emptyIndex] = temp;
+
+    renderBoard(currentDeck);
+
+    console.log("Empty now at:", emptyTile.dataset.index);
+
+    // TO DO: check for win here
 
 }
 
