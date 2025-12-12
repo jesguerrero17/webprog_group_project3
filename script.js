@@ -272,7 +272,18 @@ function updateScoreBoard() {
     <p>Moves: ${moveCount}</p>
     <p>Current Turn: Player ${currentPlayer}</p>
   `;
+
+  const threshold = 20; // change when background appears
+  const fadeLayer = document.getElementById("bg-fade-layer");
+
+  if (moveCount >= threshold) {
+    fadeLayer.style.backgroundImage = "url('winter-holiday-desktop.jpg')";
+    fadeLayer.style.opacity = "1";
+  } else {
+    fadeLayer.style.opacity = "0";
+  }
 }
+
 
 function saveScore(entry) {
   let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
