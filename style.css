@@ -95,3 +95,19 @@ h1 {
     background-color: #3b7a4e;
     border-color: #44e44f;
 }
+
+/* Background fade layer */
+#bg-fade-layer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0;
+    transition: opacity 1.2s ease-in-out;
+    z-index: -1;
+    pointer-events: none;
+}
