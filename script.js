@@ -39,8 +39,15 @@ startBtn.addEventListener("click", () => {
   const size = parseInt(document.getElementById("tiles").value);
   let deck = Array.from({ length: size * size }, (_, i) => i + 1);
   deck[deck.length - 1] = 0;
-  deck = relayShuffle(deck, size, 200);
+
+  // real shuffle
+  //deck = relayShuffle(deck, size, 200);
+  //currentDeck = deck.slice();
+
+  // Create a deck that is one move from winning to test win functionality
+  deck = oneMoveFromWinDeck(size);
   currentDeck = deck.slice();
+
 
   // Render board
   renderBoard(deck);
@@ -50,6 +57,20 @@ startBtn.addEventListener("click", () => {
   gameContainer.style.display = "block";
 
 });
+
+function oneMoveFromWinDeck(size) {
+  // solved deck: 1..(n*n-1), 0 at the end
+  const deck = Array.from({ length: size * size }, (_, i) => i + 1);
+  deck[deck.length - 1] = 0;
+
+  // make exactly 1 legal move (swap empty with one neighbor)
+  const emptyIndex = deck.indexOf(0); // last index
+  const neighbors = getAdjacentIndexes(emptyIndex, size);
+  const swapWith = neighbors[Math.floor(Math.random() * neighbors.length)];
+
+  [deck[emptyIndex], deck[swapWith]] = [deck[swapWith], deck[emptyIndex]];
+  return deck;
+}
 
 // Relay shuffle helper
 function relayShuffle(deck, size, moves = 200) {
@@ -172,12 +193,27 @@ function moveTile(tile){
     currentDeck[emptyIndex] = temp;
 
     renderBoard(currentDeck);
+    checkWin();
+
 
     console.log("Empty now at:", emptyTile.dataset.index);
 
-    // TO DO: check for win here
 
 }
+function isWinningDeck(deck) {
+  // winning: 1..(n*n-1), then 0 at the end
+  for (let i = 0; i < deck.length - 1; i++) {
+    if (deck[i] !== i + 1) return false;
+  }
+  return deck[deck.length - 1] === 0;
+}
+
+function checkWin() {
+  if (isWinningDeck(currentDeck)) {
+    endGame(true);
+  }
+}
+
 
 let timeElapsed = 0;
 let timer = null;
