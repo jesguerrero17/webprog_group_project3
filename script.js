@@ -9,6 +9,10 @@ const gameContainer = document.getElementById("memory-game-container");
 const gameBoard = document.getElementById("game-board");
 const timeLeftSpan = document.getElementById("time");
 
+// Sound Effects
+const moveSound = new Audio("whoosh.mp3");
+moveSound.volume = 0.5;
+
 // Scorebard and leaderbaord
 const scoreBoard = document.createElement("div");
 scoreBoard.id = "score-board";
@@ -164,6 +168,8 @@ function moveTile(tile){
 
     // Check for adjacency to prevent illegal moves
     if (!isAdjacent(clickedIndex, emptyIndex, size)) return;
+    moveSound.currentTime = 0; // restart sound if clicked fast
+    moveSound.play();
 
     // Move Count Incremeant
     moveCount++;
