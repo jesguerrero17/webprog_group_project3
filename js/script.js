@@ -9,6 +9,14 @@ const gameContainer = document.getElementById("memory-game-container");
 const gameBoard = document.getElementById("game-board");
 const timeLeftSpan = document.getElementById("time");
 
+// Difficulty Setting
+const difficultyMoves = {
+  easy: 50,
+  medium: 200,
+  hard: 400,
+  grinch: 1000
+};
+
 // Sound Effects
 const moveSound = new Audio("whoosh.mp3");
 moveSound.volume = 0.5;
@@ -44,13 +52,18 @@ startBtn.addEventListener("click", () => {
   let deck = Array.from({ length: size * size }, (_, i) => i + 1);
   deck[deck.length - 1] = 0;
 
-  // real shuffle
-  //deck = relayShuffle(deck, size, 200);
-  //currentDeck = deck.slice();
+
+  // Get difficulty setting
+  const difficulty = document.getElementById("difficulty").value;
+  const shuffleMoves = difficultyMoves[difficulty];
+
+  // Real shuffle based on difficulty
+  deck = relayShuffle(deck, size, shuffleMoves);
+  currentDeck = deck.slice();
 
   // Create a deck that is one move from winning to test win functionality
-  deck = oneMoveFromWinDeck(size);
-  currentDeck = deck.slice();
+  // deck = oneMoveFromWinDeck(size);
+  // currentDeck = deck.slice();
 
 
   // Render board
