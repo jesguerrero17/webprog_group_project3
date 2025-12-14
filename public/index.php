@@ -15,6 +15,13 @@
     <div id="memory-game-controls">
         <h3>Reindeer Games Setup</h3>
         <div>
+            <label for="play-mode">Game Type:</label>
+            <select id="play-mode">
+                <option value="local">Local</option>
+                <option value="online">Online</option>
+            </select>
+        </div>
+        <div>
             <label for="tiles">Matrix:</label>
             <select id="tiles">
                 <option value="3">3 x 3</option>
@@ -33,8 +40,19 @@
                 <option value="grinch">Grinch</option>
             </select>
         </div>
+        <div>
+            <div id="mode-container" style="display:none;">
+                <label for="game-mode">Competitive Mode:</label>
+                <select id="game-mode">
+                    <option value="speed">Speed Solving</option>
+                    <option value="moves">Fewest Moves</option>
+                </select>
+            </div>
+
+        </div>
         <button id="start-game" class="btn">Start Game</button>
     </div>
+
 
     <!-- Game Container -->
     <!-- TO DO: Change to counter not timer  -->
@@ -44,7 +62,9 @@
         <div id="game-board"></div>
     </div>
 
-
+    <script>
+        window.USER_ID_FROM_SERVER = <?= json_encode($_SESSION["user_id"] ?? null) ?>;
+    </script>
     <script src="js/script.js"></script>
 </body>
 
