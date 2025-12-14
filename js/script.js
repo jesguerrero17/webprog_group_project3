@@ -18,8 +18,16 @@ const difficultyMoves = {
 };
 
 // Sound Effects
-const moveSound = new Audio("whoosh.mp3");
+const moveSound = new Audio("../assets/whoosh.mp3");
 moveSound.volume = 0.5;
+
+// holiday background sound
+const holidaySound = new Audio("../assets/soft_jingle.mp3");
+holidaySound.volume = 0.6;
+holidaySound.loop = false;
+
+const winSound = new Audio("../assets/yay.mp3");
+winSound.volume = 0.8;
 
 // Scorebard and leaderbaord
 const scoreBoard = document.createElement("div");
@@ -32,6 +40,8 @@ document.body.appendChild(leaderboardDiv);
 
 // Global Deck Variable
 let currentDeck = [];
+let holidaySoundPlayed = false;
+
 
 
 // Start game
@@ -41,6 +51,8 @@ startBtn.addEventListener("click", () => {
 
     // Initialize move Count
   moveCount = 0;
+  // holidaySoundPlayed = false; might not need
+
 
   // Reset scores and player turn
   // TO DO: this should reset the game and have the scorebaord set to 0
@@ -260,15 +272,27 @@ function stopCounter() {
   clearInterval(timer);
 }
 
+function resetBackground() {
+  const fadeLayer = document.getElementById("bg-fade-layer");
+  fadeLayer.style.opacity = "0";
+  fadeLayer.style.backgroundImage = "";
+}
+
 // End game
 // TO DO: Modify to complete our game
 function endGame(won) {
   // Stop counter
   stopCounter();
+  resetBackground();
 
 
 // TO DO : Is there a case where game ends and a display should be made?
-  alert(won ? "Well Done!" : "Try again!");
+if (won) {
+  winSound.currentTime = 0;
+  winSound.play();
+}
+alert(won ? "Well Done!" : "Try again!");
+
 
   // Prompt for name
   const playerName = prompt("Enter your name:");
@@ -296,10 +320,17 @@ function updateScoreBoard() {
   const fadeLayer = document.getElementById("bg-fade-layer");
 
   if (moveCount >= threshold) {
-    fadeLayer.style.backgroundImage = "url('winter-holiday-desktop.jpg')";
+    fadeLayer.style.backgroundImage = "url('../assets/winter-holiday-desktop.jpg')";
     fadeLayer.style.opacity = "1";
+
+        if (!holidaySoundPlayed) {
+      holidaySound.currentTime = 0;
+      holidaySound.play();
+      holidaySoundPlayed = true;
+    }
   } else {
     fadeLayer.style.opacity = "0";
+    holidaySoundPlayed = false; // reset if game restarts
   }
 }
 
