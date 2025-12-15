@@ -23,7 +23,7 @@ if (!isset($_SESSION['UserData']['UserID'])) {
     <div class="auth-box">
         <h3>Login</h3>
 
-        <form action="handle_login.php" method="POST">
+        <form action="../auth/handle_login.php" method="POST">
 
             <label>Username</label>
             <input type="text" name="username" required>
@@ -34,7 +34,7 @@ if (!isset($_SESSION['UserData']['UserID'])) {
             <button class="auth-btn" type="submit">Login</button>
         </form>
 
-        <a class="auth-link" href="register.php">Create an account</a>
+        <a class="auth-link" href="../auth/register.php">Create an account</a>
     </div>
 
     <!-- Game Setup Controls -->
