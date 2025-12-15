@@ -12,7 +12,7 @@ $matchId = $_POST["match_id"];   // string
 $moves = (int) $_POST["moves"];
 $time = (int) $_POST["time"];
 
-// 1) Save player result
+// Save player result
 $stmt = $conn->prepare("
     UPDATE match_players
     SET moves = ?, time = ?, finished = 1
@@ -21,7 +21,7 @@ $stmt = $conn->prepare("
 $stmt->bind_param("iisi", $moves, $time, $matchId, $userId);
 $stmt->execute();
 
-// 2) Check if both players finished
+// Check if both players finished
 $stmt2 = $conn->prepare("
     SELECT mp.user_id, mp.moves, mp.time, u.username
     FROM match_players mp
@@ -42,7 +42,7 @@ if (count($players) < 2) {
     exit;
 }
 
-// 3) Prevent duplicate match_results
+// Prevent duplicate match_results
 $stmtCheck = $conn->prepare("SELECT COUNT(*) FROM match_results WHERE match_id = ?");
 $stmtCheck->bind_param("s", $matchId);
 $stmtCheck->execute();
@@ -54,7 +54,7 @@ if ($count > 0) {
     exit;
 }
 
-// 4) Determine winner — get gameMode from matches table
+// Determine winner — get gameMode from matches table
 $stmt3 = $conn->prepare("SELECT mode FROM matches WHERE match_id = ?");
 $stmt3->bind_param("s", $matchId);
 $stmt3->execute();
@@ -73,7 +73,7 @@ if ($gameMode === "moves") {
 
 $loser = ($winner["user_id"] === $p1["user_id"]) ? $p2 : $p1;
 
-// 5) Save match result
+// Save match result
 $stmt4 = $conn->prepare("
     INSERT INTO match_results (match_id, winner_id, loser_id, mode)
     VALUES (?, ?, ?, ?)
@@ -81,8 +81,8 @@ $stmt4 = $conn->prepare("
 $stmt4->bind_param("siis", $matchId, $winner["user_id"], $loser["user_id"], $gameMode);
 $stmt4->execute();
 
-// 6) Save both players to leaderboard
-// ✅ playMode replaces gameType
+// Save both players to leaderboard
+// playMode replaces gameType
 $playMode = "online";  // always online for this script
 
 $stmtLB = $conn->prepare("
@@ -102,7 +102,7 @@ foreach ($players as $p) {
     $stmtLB->execute();
 }
 
-// 7) Mark match finished
+// Mark match finished
 $stmt5 = $conn->prepare("UPDATE matches SET status = 'finished' WHERE match_id = ?");
 $stmt5->bind_param("s", $matchId);
 $stmt5->execute();

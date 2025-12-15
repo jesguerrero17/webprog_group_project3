@@ -1,8 +1,8 @@
 <?php
 $host = "localhost";
-$user = "root";
-$pass = "your_password";
-$dbname = "reindeer_games";
+$user = "jguerrero11";
+$pass = "jguerrero11";
+$dbname = "jguerrero11";
 
 $conn = new mysqli($host, $user, $pass, $dbname);
 

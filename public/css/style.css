@@ -1,3 +1,6 @@
+/* ===========================
+   GLOBAL PAGE STYLING
+   =========================== */
 body {
     background-color: #1e1e1e;
     color: white;
@@ -12,6 +15,9 @@ h1 {
     margin-bottom: 25px;
 }
 
+/* ===========================
+   GAME CONTROLS
+   =========================== */
 #memory-game-controls {
     background-color: #2a2a2a;
     padding: 20px;
@@ -35,6 +41,7 @@ h1 {
     border-radius: 6px;
 }
 
+/* Buttons */
 .btn {
     background-color: #7a4e3b;
     border: 2px solid #e44f44;
@@ -50,7 +57,9 @@ h1 {
     opacity: 0.8;
 }
 
-
+/* ===========================
+   GAME BOARD + TILES
+   =========================== */
 #memory-game-container {
     margin-top: 40px;
 }
@@ -59,13 +68,11 @@ h1 {
     margin-bottom: 10px;
 }
 
-
 #game-board {
     display: grid;
     justify-content: center;
     gap: 10px;
     margin-top: 20px;
-
 }
 
 .tile {
@@ -83,13 +90,11 @@ h1 {
     user-select: none;
 }
 
-
 .tile.hidden {
     background-color: #000;
     border: 2px solid #444;
     color: transparent;
 }
-
 
 .tile.matched {
     background-color: #3b7a4e;
@@ -110,4 +115,91 @@ h1 {
     transition: opacity 1.2s ease-in-out;
     z-index: -1;
     pointer-events: none;
+}
+
+/* ===========================
+   AUTH PAGES (LOGIN/REGISTER)
+   =========================== */
+.auth-box {
+    background-color: #2a2a2a;
+    width: 250px;
+    margin: 40px auto;
+    padding: 25px;
+    border-radius: 12px;
+    border: 2px solid #e44f44;
+    box-shadow: 0 0 15px rgba(0,0,0,0.4);
+}
+
+.auth-box label {
+    display: block;
+    text-align: left;
+    margin-bottom: 6px;
+    font-size: 15px;
+    color: #ffb8b8;
+}
+
+.auth-box input[type="text"],
+.auth-box input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 18px;
+    border-radius: 8px;
+    border: 2px solid #7a4e3b;
+    background-color: #1e1e1e;
+    color: white;
+    font-size: 16px;
+    outline: none;
+}
+
+.auth-box input:focus {
+    border-color: #e44f44;
+    box-shadow: 0 0 5px #e44f44;
+}
+
+.auth-btn {
+    background-color: #7a4e3b;
+    border: 2px solid #e44f44;
+    color: white;
+    padding: 10px 25px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 100%;
+    margin-top: 10px;
+    transition: 0.2s ease;
+}
+
+.auth-btn:hover {
+    opacity: 0.85;
+}
+
+.auth-link {
+    margin-top: 15px;
+    display: block;
+    color: #e44f44;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.auth-link:hover {
+    text-decoration: underline;
+}
+
+.auth-message {
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.auth-error {
+    background-color: #5a1e1e;
+    border: 1px solid #e44f44;
+    color: #ffb8b8;
+}
+
+.auth-success {
+    background-color: #1e5a2a;
+    border: 1px solid #44e44f;
+    color: #b8ffcb;
 }

@@ -1,19 +1,46 @@
+<?php
+session_start();
+
+if (!isset($_SESSION['UserData']['UserID'])) {
+    header("Location: ../auth/login.php");
+    exit;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <title>Reindeer Games</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
     <div id="bg-fade-layer"></div>
     <h1>Reindeer Games</h1>
 
+    <div class="auth-box">
+        <h3>Login</h3>
+
+        <form action="handle_login.php" method="POST">
+
+            <label>Username</label>
+            <input type="text" name="username" required>
+
+            <label>Password</label>
+            <input type="password" name="password" required>
+
+            <button class="auth-btn" type="submit">Login</button>
+        </form>
+
+        <a class="auth-link" href="register.php">Create an account</a>
+    </div>
+
     <!-- Game Setup Controls -->
     <div id="memory-game-controls">
         <h3>Reindeer Games Setup</h3>
+
         <div>
             <label for="play-mode">Game Type:</label>
             <select id="play-mode">
